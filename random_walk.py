@@ -1,9 +1,11 @@
 import numpy as np
 from bokeh.plotting import figure
-from bokeh.io import show, output_file, curdoc
+from bokeh.io import show, output_file, curdoc, save
 from bokeh.models import ColumnDataSource, Slider, Select, Range1d
 from bokeh.layouts import row, column, widgetbox
 from bokeh.palettes import inferno
+from bokeh.resources import CDN
+from bokeh.embed import components
 
 
 #Create steps in a loop and append them to our arrays
@@ -103,5 +105,10 @@ menu2.on_change('value', update_menu)
 layout = column(widgetbox(menu1, menu2, slider), plot)
 curdoc().add_root(layout)
 
+#script, div = components(layout)
+#print(script)
+#print(div)
 #output_file('random.html')
+#save(layout)
+
 #show(plot)
