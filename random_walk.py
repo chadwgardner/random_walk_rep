@@ -3,6 +3,7 @@ from bokeh.plotting import figure
 from bokeh.io import show, output_file, curdoc
 from bokeh.models import ColumnDataSource, Slider, Select, Range1d
 from bokeh.layouts import row, column, widgetbox
+from bokeh.palettes import inferno
 
 
 #Create steps in a loop and append them to our arrays
@@ -39,10 +40,9 @@ x_max = max([max(w) for w in x_walks])
 y_min = min([min(w) for w in y_walks])
 y_max = max([max(w) for w in y_walks])
 
+colors = [np.random.choice(inferno(100)) for x in x_walks]
 
-
-plot = figure(x_range=(x_min, x_max), y_range=(y_min, y_max))
-#x_range=(-1*limit, limit), y_range=(-1*limit, limit),plot_height=700, plot_width=700)
+plot = figure(x_range=(x_min, x_max), y_range=(y_min, y_max), plot_height=500, plot_width=500)
 
 
 def update_plot(attr, old, new):
@@ -50,25 +50,29 @@ def update_plot(attr, old, new):
 
     new_data = {
     'xs' : [w[:ind] for w in x_walks],
-    'ys' : [w[:ind] for w in y_walks]
+    'ys' : [w[:ind] for w in y_walks],
+    'colors': colors
     }
     source.data = new_data
 
 def update_menu(attr, old, new):
-    new_n_walk = int(menu1.value)
+    new_n_walks = int(menu1.value)
     new_walk_length = int(menu2.value)
     global x_walks
     global y_walks
-    x_walks, y_walks = get_walks(new_n_walk, new_walk_length)
+    global colors
+    x_walks, y_walks = get_walks(new_n_walks, new_walk_length)
 
     x_min = min([min(w) for w in x_walks])
     x_max = max([max(w) for w in x_walks])
     y_min = min([min(w) for w in y_walks])
     y_max = max([max(w) for w in y_walks])
+    colors = [np.random.choice(inferno(100)) for w in x_walks]
 
     new_data = {
     'xs' : x_walks,
-    'ys' : y_walks
+    'ys' : y_walks,
+    'colors' : colors
     }
     source.data = new_data
     plot.x_range.start = x_min
@@ -77,12 +81,14 @@ def update_menu(attr, old, new):
     plot.y_range.end = y_max
     slider.end = new_walk_length
 
+
 source = ColumnDataSource(data={
-    'xs' : x_walks[0][:1],
-    'ys' : y_walks[0][:1]
+    'xs' : x_walks,
+    'ys' : y_walks,
+    'colors' : colors
 })
 
-plot.multi_line(xs='xs', ys='ys', alpha=0.2, source=source)
+plot.multi_line(xs='xs', ys='ys', alpha=0.4, line_color='colors', line_width=3, source=source)
 
 
 slider = Slider(start=0, end=len(x_walks[0]), step=1, value=0)
