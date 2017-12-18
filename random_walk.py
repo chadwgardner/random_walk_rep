@@ -1,12 +1,12 @@
 import numpy as np
 from bokeh.plotting import figure
 from bokeh.io import show, output_file, curdoc
-from bokeh.models import ColumnDataSource, Slider
+from bokeh.models import ColumnDataSource, Slider, Select, Range1d
 from bokeh.layouts import row, column, widgetbox
 
 
 #Create steps in a loop and append them to our arrays
-def get_walks(walk_length, n_walks):
+def get_walks(n_walks, walk_length):
     """returns a list of lists for the x and y coordinates of a specified
     number of random walks of a specified length"""
     x_walks = [ [] for x in range(n_walks)]
@@ -32,7 +32,7 @@ def get_walks(walk_length, n_walks):
         x, y = ([0], [0])
     return x_walks, y_walks
 
-x_walks, y_walks = get_walks(1000, 10)
+x_walks, y_walks = get_walks(10, 100)
 
 x_min = min([min(w) for w in x_walks])
 x_max = max([max(w) for w in x_walks])
@@ -44,10 +44,6 @@ y_max = max([max(w) for w in y_walks])
 plot = figure(x_range=(x_min, x_max), y_range=(y_min, y_max))
 #x_range=(-1*limit, limit), y_range=(-1*limit, limit),plot_height=700, plot_width=700)
 
-source = ColumnDataSource(data={
-    'xs' : x_walks[0][:1],
-    'ys' : y_walks[0][:1]
-})
 
 def update_plot(attr, old, new):
     ind = slider.value
@@ -58,13 +54,47 @@ def update_plot(attr, old, new):
     }
     source.data = new_data
 
+def update_menu(attr, old, new):
+    new_n_walk = int(menu1.value)
+    new_walk_length = int(menu2.value)
+    global x_walks
+    global y_walks
+    x_walks, y_walks = get_walks(new_n_walk, new_walk_length)
+
+    x_min = min([min(w) for w in x_walks])
+    x_max = max([max(w) for w in x_walks])
+    y_min = min([min(w) for w in y_walks])
+    y_max = max([max(w) for w in y_walks])
+
+    new_data = {
+    'xs' : x_walks,
+    'ys' : y_walks
+    }
+    source.data = new_data
+    plot.x_range.start = x_min
+    plot.x_range.end = x_max
+    plot.y_range.start = y_min
+    plot.y_range.end = y_max
+    slider.end = new_walk_length
+
+source = ColumnDataSource(data={
+    'xs' : x_walks[0][:1],
+    'ys' : y_walks[0][:1]
+})
+
 plot.multi_line(xs='xs', ys='ys', alpha=0.2, source=source)
 
 
 slider = Slider(start=0, end=len(x_walks[0]), step=1, value=0)
 slider.on_change('value', update_plot)
 
-layout = column(widgetbox(slider), plot)
+menu1 = Select(options=['1', '10', '100'], value='10', title='Number of Walks')
+menu1.on_change('value', update_menu)
+
+menu2 = Select(options=['10', '100', '1000', '2000'], value='100', title='Length of Walks')
+menu2.on_change('value', update_menu)
+
+layout = column(widgetbox(menu1, menu2, slider), plot)
 curdoc().add_root(layout)
 
 #output_file('random.html')
