@@ -5,7 +5,7 @@ from bokeh.models import ColumnDataSource, Slider, Select, Range1d
 from bokeh.layouts import row, column, widgetbox
 from bokeh.palettes import inferno
 from bokeh.resources import CDN
-from bokeh.embed import components
+from bokeh.embed import components, autoload_server
 
 
 #Create steps in a loop and append them to our arrays
@@ -96,15 +96,16 @@ plot.multi_line(xs='xs', ys='ys', alpha=0.4, line_color='colors', line_width=3, 
 slider = Slider(start=0, end=len(x_walks[0]), step=1, value=0)
 slider.on_change('value', update_plot)
 
-menu1 = Select(options=['1', '10', '100'], value='10', title='Number of Walks')
+menu1 = Select(options=['1', '10', '100','1000'], value='10', title='Number of Walks')
 menu1.on_change('value', update_menu)
 
-menu2 = Select(options=['10', '100', '1000', '2000'], value='100', title='Length of Walks')
+menu2 = Select(options=['10', '100', '1000', '2000', '10000'], value='100', title='Length of Walks')
 menu2.on_change('value', update_menu)
 
 layout = column(widgetbox(menu1, menu2, slider), plot)
 curdoc().add_root(layout)
 
+#script = autoload_server
 #script, div = components(layout)
 #print(script)
 #print(div)
