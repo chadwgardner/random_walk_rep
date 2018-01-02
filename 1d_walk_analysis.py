@@ -1,22 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from random_walk import get_walks
+from 1d_random_walk import get_1d_walks
 from my_stats import ecdf
 
 sns.set()
 
 
 #getting walks
-x, y = get_walks(10000, 100)
+x = get_1d_alks(10000, 100)
 #x_np = np.array(x)
 #y_np = np.array(y)
 
 #get end points of walks, calculate distances from origin, find mean
-end_points = [[i[-1],j[-1]] for i,j in zip(x, y)]
-distances = np.sqrt([i[0]**2 + i[1]**2 for i in end_points])
-mean_dist = np.mean(distances)
-std_dist = np.std(distances)
+end_points = [[i[-1]] for i in x]
+
+mean_dist = np.mean(end_points)
+std_dist = np.std(end_points)
 
 conf_int = np.percentile(distances, [2.5,97.5])
 
@@ -27,10 +27,7 @@ x_ecdf, y_ecdf = ecdf(distances)
 
 
 #examining avg coordinates and their distribution
-flat_coords = [list(i) for i in x]
-for i in range(len(flat_coords)):
-    flat_coords[i].extend(y[i])
-coords_avg = [np.mean(i) for i in flat_coords]
+coords_avg = [np.mean(i) for i in x]
 coords_avg_avg = np.mean(coords_avg)
 coords_std = np.std(coords_avg)
 coords_normal = np.random.normal(coords_avg_avg, coords_std, size=10000)
