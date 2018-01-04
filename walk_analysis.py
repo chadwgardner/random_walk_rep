@@ -36,7 +36,7 @@ for i in range(len(flat_coords)):
 coords_avg = [np.mean(i) for i in flat_coords]
 coords_avg_avg = np.mean(coords_avg)
 coords_std = np.std(coords_avg)
-coords_normal = np.random.normal(coords_avg_avg, coords_std, size=10000)
+coords_normal = np.random.normal(coords_avg_avg, coords_std, size=100000)
 
 #ecdf and pdf of coords
 plt.subplot(2,2,1)
@@ -64,10 +64,11 @@ plt.ylabel('Fraction of walks')
 
 #histogram
 plt.subplot(2,2,2)
-plt.hist(x_distances, normed=True, bins=40, alpha=0.4)
+plt.hist2d(x_distances, y_distances)
 #plt.hist(samples, histtype='stepfilled', normed=True, bins=100, alpha=0.4)
-plt.axvline(x=x_mean_dist, color='r', alpha=0.4)
-plt.legend(['mean', 'normal', 'random walk'])
+#plt.axvline(x=x_mean_dist, color='r', alpha=0.4)
+#plt.legend(['mean', 'normal', 'random walk'])
+plt.colorbar()
 plt.xlabel('Distance walked in steps')
 plt.ylabel('Fraction of walks')
 
